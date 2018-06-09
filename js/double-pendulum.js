@@ -14,7 +14,7 @@ $(document).ready(function () {
             this.angle += this.velocity;
             this.hsl[0] = radToDeg(this.angle) / 360;
             this.rgb = hslToRgb(this.hsl[0], this.hsl[1], this.hsl[2]);
-            this.hex = '#' +  rgbToHex(this.rgb[0], this.rgb[1], this.rgb[2]);
+            this.hex = '#' + rgbToHex(this.rgb[0], this.rgb[1], this.rgb[2]);
 
         },
     };
@@ -29,7 +29,7 @@ $(document).ready(function () {
         name: 'd0'
     };
     var d1 = {
-        mass: 400,
+        mass: 200,
         radius: 250,
         angle: 0,
         velocity: 0,
@@ -37,9 +37,17 @@ $(document).ready(function () {
         position_x: 0,
         position_y: 0,
         name: 'd1',
+        updateMass: function (mass) {
+            this.mass = parseInt(mass);
+            // this.updateAcceleration();
+            // this.updateVelocity();
+            // this.updateAngle();
+            // this.updatePosition();
+            this.updateDraw();
+        },
         updateVelocity: function () {
             this.velocity += this.acceleration;
-            this.velocity -= Math.abs(this.velocity * friction);
+            // this.velocity -= Math.abs(this.velocity * friction);
         },
         updateAcceleration: function () {
             var num = {
@@ -52,10 +60,9 @@ $(document).ready(function () {
                 a: d1.radius * (2 * d1.mass + d2.mass - d2.mass * Math.cos(2 * d1.angle - 2 * d2.angle))
             };
             this.acceleration = (num.a + num.b + num.c * num.d) / den.a;
-            // this.acceleration -= Math.abs(this.acceleration * friction);
         },
         updateAngle: function () {
-            this.angle += this.velocity ;
+            this.angle += this.velocity;
         },
 
         updatePosition: function () {
@@ -63,8 +70,10 @@ $(document).ready(function () {
             this.position_y = this.radius * Math.cos(this.angle);
         },
         updateDraw: function () {
-            $doublePendulum.setLayer(this.name, {
-                x: this.position_x, y: this.position_y
+            $pendulumCanvas.setLayer(this.name, {
+                x: this.position_x, y: this.position_y,
+                width: this.mass / 3, height: this.mass / 3
+
             });
         }
     };
@@ -79,12 +88,16 @@ $(document).ready(function () {
         old_x: 0,
         old_y: 0,
         name: 'd2',
+        updateMass: function (mass) {
+            this.mass = mass;
+            this.updateDraw();
+        },
         updateVelocity: function () {
             this.velocity += this.acceleration;
-             this.velocity -= Math.abs(this.velocity * friction);
+            // this.velocity -= Math.abs(this.velocity * friction);
         },
         updateAngle: function () {
-            this.angle += this.velocity ;
+            this.angle += this.velocity;
         },
         updatePosition: function () {
             this.old_x = this.position_x;
@@ -103,11 +116,58 @@ $(document).ready(function () {
                 a: d2.radius * (2 * d1.mass + d2.mass - d2.mass * Math.cos(2 * d1.angle - 2 * d2.angle))
             };
             this.acceleration = (num.a * (num.b + num.c + num.d)) / den.a;
-            // this.acceleration -= Math.abs(this.acceleration * friction);
         },
         updateDraw: function () {
-            $doublePendulum.setLayer(this.name, {
-                x: this.position_x, y: this.position_y
+            $pendulumCanvas.setLayer(this.name, {
+                x: this.position_x, y: this.position_y,
+                width: this.mass / 3, height: this.mass / 3
+            });
+        }
+
+    };var d2 = {
+        mass: 100,
+        radius: 300,
+        angle: 0,
+        velocity: 0,
+        acceleration: 0,
+        position_x: 0,
+        position_y: 0,
+        old_x: 0,
+        old_y: 0,
+        name: 'd2',
+        updateMass: function (mass) {
+            this.mass = mass;
+            this.updateDraw();
+        },
+        updateVelocity: function () {
+            this.velocity += this.acceleration;
+            // this.velocity -= Math.abs(this.velocity * friction);
+        },
+        updateAngle: function () {
+            this.angle += this.velocity;
+        },
+        updatePosition: function () {
+            this.old_x = this.position_x;
+            this.old_y = this.position_y;
+            this.position_x = this.radius * Math.sin(this.angle) + d1.position_x;
+            this.position_y = this.radius * Math.cos(this.angle) + d1.position_y;
+        },
+        updateAcceleration: function () {
+            var num = {
+                a: 2 * Math.sin(d1.angle - d2.angle),
+                b: (d1.velocity * d1.velocity * d1.radius * (d1.mass + d2.mass)),
+                c: G * (d1.mass + d2.mass) * Math.cos(d1.angle),
+                d: d2.velocity * d2.velocity * d2.radius * d2.mass * Math.cos(d1.angle - d2.angle)
+            };
+            var den = {
+                a: d2.radius * (2 * d1.mass + d2.mass - d2.mass * Math.cos(2 * d1.angle - 2 * d2.angle))
+            };
+            this.acceleration = (num.a * (num.b + num.c + num.d)) / den.a;
+        },
+        updateDraw: function () {
+            $pendulumCanvas.setLayer(this.name, {
+                x: this.position_x, y: this.position_y,
+                width: this.mass / 3, height: this.mass / 3
             });
         }
 
@@ -131,7 +191,7 @@ $(document).ready(function () {
         },
 
         updateDraw: function () {
-            $doublePendulum.addLayer({
+            $pendulumCanvas.addLayer({
                 name: 'stroke' + frame,
                 type: 'line',
                 rounded: true,
@@ -149,19 +209,45 @@ $(document).ready(function () {
     $('#start').click(start);
     $('#stop').click(stop);
     $('#reset').click(reset);
-    var $dot_0 = $('#dot_0');
-    var $dot_1 = $('#dot_1');
-    var $dot_2 = $('#dot_2');
+    $('#show_pendulum').change(function () {
+        if (this.checked === true) {
+            showPendulum = true;
+        } else {
+            showPendulum = false;
+        }
+        updateVisibility();
+    });
+    $('#mass-1').change(function () {
+        d1.updateMass(parseInt($(this).val()));
+    }).change(outputValue);
+    $('#mass-2').change(function () {
+        d2.updateMass(parseInt($(this).val()));
+    }).change(outputValue);
+    $('#radius-1').change(function () {
+        d1.radius = parseInt($(this).val());
+        stop();
+        reset();
+    }).change(outputValue);
+    $('#radius-2').change(function () {
+        d2.radius = parseInt($(this).val());
+        stop();
+        reset();
+    }).change(outputValue);
+
+    function outputValue() {
+        console.log($(this).val());
+        $(this).prev('label').find('span').html($(this).val());
+    }
 
 
-    var $doublePendulum = $('#double-pendulum');
+    var $pendulumCanvas = $('#double-pendulum');
     var centerX = 1200 / 2;
     var centerY = 1200 / 2;
-    $doublePendulum.translateCanvas({
+    $pendulumCanvas.translateCanvas({
         translateX: centerX,
         translateY: centerY
     });
-    var FPS = 30;
+    var FPS = 90;
     var frame = 0;
     var loop;
     var loopStarted = false;
@@ -171,11 +257,17 @@ $(document).ready(function () {
     var showPendulum = true;
     reset();
 
-    function setPendulumVisibility() {
-        
+    function updateVisibility() {
+        if (showPendulum === true) {
+            $pendulumCanvas.setLayerGroup('pendulum', {opacity: 1});
+        } else {
+            $pendulumCanvas.setLayerGroup('pendulum', {opacity: 0});
+        }
+        $pendulumCanvas.drawLayers();
     }
 
     function update() {
+        updateVisibility();
         d1.updateAcceleration();
         d2.updateAcceleration();
         d1.updateVelocity();
@@ -184,20 +276,13 @@ $(document).ready(function () {
         d2.updateAngle();
         d1.updatePosition();
         d2.updatePosition();
+        d1.updateDraw();
+        d2.updateDraw();
         colorWheel.update();
         trace.updatePosition();
 
 
-        $doublePendulum.setLayer('d1', {
-            x: d1.position_x, y: d1.position_y
-
-        });
-        $doublePendulum.setLayer('d2', {
-            x: d2.position_x, y: d2.position_y
-
-        });
-
-        $doublePendulum.setLayer('line_1', {
+        $pendulumCanvas.setLayer('line_1', {
             x1: d0.position_x, y1: d0.position_y,
             x2: d1.position_x, y2: d1.position_y,
             x3: d2.position_x, y3: d2.position_y
@@ -208,19 +293,16 @@ $(document).ready(function () {
     }
 
     function draw() {
-
-        updateOutput($dot_0, d0);
-        updateOutput($dot_1, d1);
-        updateOutput($dot_2, d2);
-        $doublePendulum.drawLayers();
+        $pendulumCanvas.drawLayers();
     }
+
     function updateOutput($element, element) {
         $element.find('.name').html(element.name);
         $element.find('.mass').html(Math.round(element.mass));
         $element.find('.radius').html(Math.round(element.radius));
         $element.find('.angle').html(Math.round(element.angle) + " | " + radToDeg(element.angle));
-        $element.find('.acceleration').html(Math.round(element.acceleration*100000));
-        $element.find('.velocity').html(Math.round(element.velocity*10000));
+        $element.find('.acceleration').html(Math.round(element.acceleration * 100000));
+        $element.find('.velocity').html(Math.round(element.velocity * 10000));
         $element.find('.position_x').html(Math.round(element.position_x));
         $element.find('.position_y').html(Math.round(element.position_y));
     }
@@ -229,9 +311,6 @@ $(document).ready(function () {
         if (!loopStarted) {
             loopStarted = true;
             loop = setInterval(function () {
-                if (showPendulum) {
-                    $doublePendulum.setLayerGroup('pendulum', {opacity:1});
-                }
                 update();
                 draw();
                 frame += 1;
@@ -240,7 +319,6 @@ $(document).ready(function () {
     }
 
     function stop() {
-        $doublePendulum.setLayerGroup('pendulum', {opacity:0});
         draw();
         clearInterval(loop);
         loop = {};
@@ -249,24 +327,25 @@ $(document).ready(function () {
     }
 
     function reset() {
-        $doublePendulum.removeLayers();
-        $doublePendulum.clearCanvas();
+        $pendulumCanvas.removeLayers();
+        $pendulumCanvas.clearCanvas();
+
         d1.velocity = 0;
         d2.velocity = 0;
         d1.angle = Math.PI + 0.5;
         d2.angle = Math.PI - 0.5;
         d1.updatePosition();
         d2.updatePosition();
-        $doublePendulum.drawRect({
+        $pendulumCanvas.drawRect({
             layer: true,
             name: 'background',
             fillStyle: 'black',
-            x:0 , y:0,
+            x: 0, y: 0,
             width: 1200,
             height: 1200,
         });
 
-        $doublePendulum.drawLine({
+        $pendulumCanvas.drawLine({
             layer: true,
             name: 'line_1',
             groups: ['pendulum'],
@@ -278,7 +357,7 @@ $(document).ready(function () {
             x3: d2.position_x, y3: d2.position_y
 
         });
-        $doublePendulum.drawEllipse({
+        $pendulumCanvas.drawEllipse({
             layer: true,
             name: d0.name,
             type: 'ellipse',
@@ -287,10 +366,10 @@ $(document).ready(function () {
             strokeWidth: 2,
             x: d0.position_x, y: d0.position_y,
             fromCenter: true,
-            width: d0.mass / 10,
-            height: d0.mass / 10
+            width: d0.mass / 3,
+            height: d0.mass / 3
         });
-        $doublePendulum.drawEllipse({
+        $pendulumCanvas.drawEllipse({
             layer: true,
             name: d1.name,
             groups: ['pendulum'],
@@ -298,10 +377,10 @@ $(document).ready(function () {
             strokeWidth: 2,
             x: d1.position_x, y: d1.position_y,
             fromCenter: true,
-            width: d1.mass / 10,
-            height: d1.mass / 10
+            width: d1.mass / 3,
+            height: d1.mass / 3
         });
-        $doublePendulum.drawEllipse({
+        $pendulumCanvas.drawEllipse({
             layer: true,
             name: d2.name,
             groups: ['pendulum'],
@@ -309,9 +388,10 @@ $(document).ready(function () {
             strokeWidth: 2,
             x: d2.position_x, y: d2.position_y,
             fromCenter: true,
-            width: d2.mass / 10,
-            height: d2.mass / 10
+            width: d2.mass / 3,
+            height: d2.mass / 3
         });
+        updateVisibility();
 
     }
 
