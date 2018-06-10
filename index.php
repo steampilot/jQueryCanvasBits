@@ -33,7 +33,7 @@
 <?php
 require_once 'src/double_pendulum.html';
 require_once 'src/anna.html';
-require_once 'src/binary_tree.html'
+//require_once 'src/binary_tree.html'
 ?>
 </body>
 </html>
