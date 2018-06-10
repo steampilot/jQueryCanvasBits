@@ -38,16 +38,15 @@ $(document).ready(function () {
         position_y: 0,
         name: 'd1',
         updateMass: function (mass) {
-            this.mass = parseInt(mass);
-            // this.updateAcceleration();
-            // this.updateVelocity();
-            // this.updateAngle();
-            // this.updatePosition();
-            this.updateDraw();
+            this.mass = parseInt(mass.val());
+            outputValue(mass);
+        },
+        updateRadius: function (radius) {
+            this.radius = parseInt(radius.val());
+            outputValue(radius);
         },
         updateVelocity: function () {
             this.velocity += this.acceleration;
-            // this.velocity -= Math.abs(this.velocity * friction);
         },
         updateAcceleration: function () {
             var num = {
@@ -89,8 +88,12 @@ $(document).ready(function () {
         old_y: 0,
         name: 'd2',
         updateMass: function (mass) {
-            this.mass = mass;
-            this.updateDraw();
+            this.mass = parseInt(mass.val());
+            outputValue(mass);
+        },
+        updateRadius: function (radius) {
+            this.radius = parseInt(radius.val());
+            outputValue(radius);
         },
         updateVelocity: function () {
             this.velocity += this.acceleration;
@@ -124,7 +127,8 @@ $(document).ready(function () {
             });
         }
 
-    };var d2 = {
+    };
+    var d2 = {
         mass: 100,
         radius: 300,
         angle: 0,
@@ -136,12 +140,15 @@ $(document).ready(function () {
         old_y: 0,
         name: 'd2',
         updateMass: function (mass) {
-            this.mass = mass;
-            this.updateDraw();
+            this.mass = parseInt(mass.val());
+            outputValue(mass);
+        },
+        updateRadius: function (radius) {
+            this.radius = parseInt(radius.val());
+            outputValue(radius);
         },
         updateVelocity: function () {
             this.velocity += this.acceleration;
-            // this.velocity -= Math.abs(this.velocity * friction);
         },
         updateAngle: function () {
             this.angle += this.velocity;
@@ -209,6 +216,10 @@ $(document).ready(function () {
     $('#start').click(start);
     $('#stop').click(stop);
     $('#reset').click(reset);
+    var $mass1 = $('#mass-1');
+    var $mass2 = $('#mass-2');
+    var $radius1 = $('#radius-1');
+    var $radius2 = $('#radius-2');
     $('#show_pendulum').change(function () {
         if (this.checked === true) {
             showPendulum = true;
@@ -217,26 +228,8 @@ $(document).ready(function () {
         }
         updateVisibility();
     });
-    $('#mass-1').change(function () {
-        d1.updateMass(parseInt($(this).val()));
-    }).change(outputValue);
-    $('#mass-2').change(function () {
-        d2.updateMass(parseInt($(this).val()));
-    }).change(outputValue);
-    $('#radius-1').change(function () {
-        d1.radius = parseInt($(this).val());
-        stop();
-        reset();
-    }).change(outputValue);
-    $('#radius-2').change(function () {
-        d2.radius = parseInt($(this).val());
-        stop();
-        reset();
-    }).change(outputValue);
-
-    function outputValue() {
-        console.log($(this).val());
-        $(this).prev('label').find('span').html($(this).val());
+    function outputValue(element) {
+        $(element).prev('label').find('span').html($(element).val());
     }
 
 
@@ -268,6 +261,11 @@ $(document).ready(function () {
 
     function update() {
         updateVisibility();
+        d1.updateMass($mass1);
+        d2.updateMass($mass2);
+        d1.updateRadius($radius1);
+        d2.updateRadius($radius2);
+
         d1.updateAcceleration();
         d2.updateAcceleration();
         d1.updateVelocity();
