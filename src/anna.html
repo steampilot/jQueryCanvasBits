@@ -7,7 +7,7 @@
         <div class="panel panel-default">
             <div class="panel-heading">
                 <div class="row">
-                    <div class="col-md-8">
+                    <div class="col-md-6">
                         <canvas id="image-processing" width="1200" height="1200" style="border: solid black">
                             <p>This is fallback content
                                 for users of assistive technologies
@@ -15,58 +15,8 @@
                                 full support for the Canvas API.</p>
                         </canvas>
                     </div>
-                    <div class="col-md-4">
-                        <h2>Image Processing</h2>
-                        <div class="btn-group h2 btn-group btn-group-justified" role="group" aria-label="VCR controls">
-                            <div class="btn-group">
-                                <button type="button" class="btn btn-primary btn-xs-block" id="start">START <i
-                                        class="fas fa-play"></i></button>
-                            </div>
-                            <div class="btn-group">
-                                <button type="button" class="btn btn-default btn-xs-block" id="reset">RESET <i
-                                        class="fas fa-eject"></i></button>
-                            </div>
-                            <div class="btn-group">
-                                <button type="button" class="btn btn-default btn-xs-block" id="stop">STOP <i
-                                        class="fas fa-stop-circle"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="">
-                            <div class="form-group">
-                                <label class="control-label" for="">Show Pendulum</label>
-                                <input checked data-toggle="toggle" type="checkbox" id="show_pendulum">
-                            </div>
-                            <div class="row">
-                                <div class="col-sm-6">
-                                    <div class="form-group">
-                                        <label class="control-label">Mass A: <span class="output">300</span></label>
-                                        <input type="range" id="mass-1" min="50" max="500" value="250" class="slider">
-                                    </div>
-                                </div>
-                                <div class="col-sm-6">
-                                    <div class="form-group">
-                                        <label class="control-label">Mass B: <span class="output">300</span></label>
-                                        <input type="range" id="mass-2" min="50" max="500" value="250" class="slider">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-sm-6">
-                                    <div class="form-group">
-                                        <label class="control-label">Radius A: <span class="output">300</span></label>
-                                        <input type="range" id="radius-1" min="50" max="500" value="300"
-                                               class="slider col-xs-12">
-                                    </div>
-                                </div>
-                                <div class="col-sm-6">
-                                    <div class="form-group">
-                                        <label class="control-label">Radius B: <span class="output">300</span></label>
-                                        <input type="range" id="radius-2" min="50" max="500" value="300" class="slider">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="col-md-6">
+                        <img src="images/test.jpg" class="image image-responsive" alt="" id="source">
                     </div>
                 </div>
             </div>
@@ -74,4 +24,4 @@
     </footer>
 </section>
 
-<script src="js/double-pendulum.js"></script>
+<script src="js/image-processing.js"></script>
